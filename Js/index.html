@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<script type="text/javascript">
+//This function will load the XML Settings File into the xmlDoc variable
+function load()
+{
+
+var xmlfile = "http://localhost/JavaScript/settings.xml";
+
+try
+        {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", xmlfile, false);
+			xmlloaded = false;
+        }
+        catch (Exception)
+        {
+            var ie = (typeof window.ActiveXObject != 'undefined');
+
+            if (ie)
+            {
+                xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+                xmlDoc.async = false;
+                while(xmlDoc.readyState != 4) {};
+                xmlDoc.load(xmlfile);
+                readXML();
+                xmlloaded = true;
+            }
+            else
+            {
+                xmlDoc = document.implementation.createDocument("", "", null);
+                xmlDoc.onload = readXML;
+                xmlDoc.load(xmlfile);
+                xmlloaded = true;
+            }
+        }
+
+        if (!xmlloaded)
+        {
+            xmlhttp.setRequestHeader('Content-Type', 'text/xml')
+            xmlhttp.send("");
+            xmlDoc = xmlhttp.responseXML;
+            readXML();
+            xmlloaded = true;
+        }
+
+
+}
+
+function GiveMeItems()
+{
+
+	if (ValidateFields() == true)
+	{
+
+		var rootElement = xmlDoc.getElementsByTagName("Multiple");
+
+		var ElementCount = rootElement.length;
+
+		var Multiples = [];
+
+		var rulesText = " ";
+
+		for (var i=0;i<ElementCount;i++)
+		{ 
+
+		numberVAL = (rootElement[i].getElementsByTagName("Number")[0].childNodes[0].nodeValue);
+
+		wordVAL = (rootElement[i].getElementsByTagName("Word")[0].childNodes[0].nodeValue);
+
+		Multiples.push({ number: numberVAL, word: wordVAL});
+
+		rulesText = rulesText + "Multiples of <b>" + Multiples[i].number + "</b> will be shown as <b>" +Multiples[i].word + "</b><br>";
+		}
+
+		document.getElementById('RulesData').innerHTML = rulesText;
+
+		var MinNumber = parseInt(document.getElementById("MinNumber").value);
+		var MaxNumber = parseInt(document.getElementById("MaxNumber").value);
+
+		var returnText = "";
+
+		for (var i=MinNumber;i<MaxNumber+1;i++)
+		{
+			var MultRule0 = (i % Multiples[0].number) == 0;
+			var MultRule1 = (i % Multiples[1].number) == 0;
+			
+			if ((MultRule0 == true) && (MultRule1 == true))
+			{
+				returnText = returnText + Multiples[0].word + " " + Multiples[1].word;
+				}
+			else
+			{
+				if (MultRule0 == true)
+				{
+					returnText = returnText + Multiples[0].word;
+					}
+				else
+				{
+					if (MultRule1 == true)
+					{
+						returnText = returnText + Multiples[1].word;
+					}
+					else
+					{
+						returnText = returnText + i;
+					}
+				}
+					
+			}
+
+			returnText = returnText + "<br>";
+
+		}
+
+		document.getElementById('Results').innerHTML = returnText;
+	}
+
+}
+
+function ValidateFields()
+{
+	var MinNumber = document.getElementById("MinNumber").value;
+	var MaxNumber = parseInt(document.getElementById("MaxNumber").value);
+	
+	var FieldValidationPassed = true;
+	
+	if (!((parseFloat(MinNumber) == parseInt(MinNumber)) && !isNaN(MinNumber)))
+	{
+		FieldValidationPassed = false;
+		alert("The value entered for the Min Number MUST be an integer number. Please enter a valid value");
+	} 
+
+	if ( !((parseFloat(MaxNumber) == parseInt(MaxNumber)) && !isNaN(MaxNumber)))
+	{
+		FieldValidationPassed = false;
+		alert("The value entered for the Max Number MUST be an integer number. Please enter a valid value");
+	}   
+  
+	return FieldValidationPassed;
+
+}
+
+</script>
+</head>
+<body onload="load()">
+	<h1>Fizz Buzz // Foo Bar</h1>
+	<form>
+		<h2>Please enter the limits</h2>
+			Min Number: <input type="text" name="MinNumber" id="MinNumber" value="1"><br><br>
+			Max Number: <input type="text" name="MaxNumber" id="MaxNumber" value="100"><br><br>
+
+			<button type="button" onclick="GiveMeItems();">Gimme!</button>
+	</form>
+<hr>
+<h2>Rules</h2>
+<div id='RulesData'></div>
+	
+<hr>
+<h2>Results</h2>
+<div id='Results'></div>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Settings>
+	<Multiples>
+		<Multiple>
+			<Number>3</Number>
+			<Word>Foo</Word>
+		</Multiple>
+		<Multiple>
+			<Number>7</Number>
+			<Word>Bar</Word>
+		</Multiple>
+	</Multiples>
+</Settings>
